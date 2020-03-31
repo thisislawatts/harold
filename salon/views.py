@@ -47,13 +47,13 @@ def inject_descriptions():
         },
 
         "emoji": {
-            "fish": u"🐟",
-            "haircut": u"💇",
-            "nail_care": u"💅",
-            "unreviewed": u"🙈",
-            "eyeglasses": u"👓",
-            "running": u"🏃",
-            "no_bell": u"🔕",
+            "fish": "🐟",
+            "haircut": "💇",
+            "nail_care": "💅",
+            "unreviewed": "🙈",
+            "eyeglasses": "👓",
+            "running": "🏃",
+            "no_bell": "🔕",
         },
 
         "review_deadline": 1,

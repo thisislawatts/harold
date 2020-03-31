@@ -41,7 +41,7 @@ def make_test_data():
         ))
         db.session.commit()
 
-    for name, state in reviewers.iteritems():
+    for name, state in reviewers.items():
         if not ReviewState.query.get(("example/test", 1, name)):
             db.session.add(ReviewState(
                 repository="example/test",

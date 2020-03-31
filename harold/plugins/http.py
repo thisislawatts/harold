@@ -1,6 +1,6 @@
 import hashlib
 import hmac
-import urlparse
+import urllib.parse
 
 from twisted.web import resource, server
 from twisted.application import internet
@@ -36,7 +36,7 @@ class ProtectedResource(resource.Resource):
                 self.http.hmac_secret, body, hashlib.sha1).hexdigest()
 
             header = request.requestHeaders.getRawHeaders(HEADER_NAME)[0]
-            hashes = urlparse.parse_qs(header)
+            hashes = urllib.parse.parse_qs(header)
             actual_hash = hashes["sha1"][0]
 
             if not constant_time_compare(expected_hash, actual_hash):

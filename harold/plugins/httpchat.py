@@ -11,7 +11,7 @@ class MessageListener(ProtectedResource):
     def _handle_request(self, request):
         channel = request.args['channel'][0]
         try:
-            message = unicode(request.args['message'][0], 'utf-8')
+            message = str(request.args['message'][0], 'utf-8')
         except UnicodeDecodeError:
             return
         else:

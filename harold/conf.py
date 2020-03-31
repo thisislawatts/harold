@@ -1,4 +1,4 @@
-from ConfigParser import RawConfigParser, NoOptionError
+from configparser import RawConfigParser, NoOptionError
 
 plugin_prefix = "harold:plugin:"
 
@@ -35,7 +35,7 @@ class PluginConfig(object):
             plugin_name = self.__module__[len("harold.plugins."):]
             section = plugin_prefix + plugin_name
 
-        for name, contents in vars(type(self)).iteritems():
+        for name, contents in vars(type(self)).items():
             if not isinstance(contents, Option):
                 continue
 

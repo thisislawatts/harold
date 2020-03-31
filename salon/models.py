@@ -56,8 +56,7 @@ class PullRequest(db.Model):
             return "eyeglasses"
 
         # now, take away the "nope" people and see what's up
-        states = states_by_reviewer.values()
-        states = [state.state for state in states
+        states = [state.state for state in states_by_reviewer.values()
                   if state.state not in ("unreviewed", "running")]
 
         if not states:

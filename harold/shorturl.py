@@ -1,4 +1,4 @@
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from collections import deque
 
 from twisted.internet import reactor
@@ -38,7 +38,7 @@ class UrlShortener(object):
         self.request_in_flight = True
 
         api_uri = "https://git.io/"
-        encoded = urllib.urlencode({"url": long_url})
+        encoded = urllib.parse.urlencode({"url": long_url})
         body_producer = StringProducer(encoded)
 
         agent = Agent(reactor)

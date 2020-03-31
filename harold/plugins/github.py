@@ -146,8 +146,8 @@ class SalonDatabase(object):
             "VALUES (%(placeholders)s);" % {
                 "conflict": "OR REPLACE" if replace_on_conflict else "",
                 "table": table,
-                "columns": ", ".join(data.iterkeys()),
-                "placeholders": ", ".join(":" + x for x in data.iterkeys()),
+                "columns": ", ".join(data.keys()),
+                "placeholders": ", ".join(":" + x for x in data.keys()),
             }
         )
         yield self.database.runOperation(query, data)
@@ -168,7 +168,7 @@ class SalonDatabase(object):
             "DELETE FROM %(table)s WHERE %(conditions)s" % {
                 "table": table,
                 "conditions": " AND ".join("{0} = :{0}".format(column_name)
-                                           for column_name in data.iterkeys()),
+                                           for column_name in data.keys()),
             }
         )
         yield self.database.runOperation(query, data)
@@ -345,11 +345,11 @@ class SalonDatabase(object):
 class Salon(object):
     emoji_rewrites = [
         # github started doing unicode characters for autocompleted emoji
-        (u"\U0001F41F", ":fish:"),
-        (u"\U0001F485", ":nail_care:"),
-        (u"\U0001F487", ":haircut:"),
-        (u"\U0001F453", ":eyeglasses:"),
-        (u"\U0001F3C3", ":running:"),
+        ("\U0001F41F", ":fish:"),
+        ("\U0001F485", ":nail_care:"),
+        ("\U0001F487", ":haircut:"),
+        ("\U0001F453", ":eyeglasses:"),
+        ("\U0001F3C3", ":running:"),
 
         # github stopped autocompleting :running:
         (":runner:", ":running:"),
@@ -362,11 +362,11 @@ class Salon(object):
 
         # this is just for fun
         (":tropical_fish:", ":fish:"),
-        (u"\U0001F420", ":fish:"),
+        ("\U0001F420", ":fish:"),
         (":trumpet::skull:", ":fish:"),
         (":trumpet: :skull:", ":fish:"),
-        (u"\U0001F3BA \U0001F480", ":fish:"),
-        (u"\U0001F3BA\U0001F480", ":fish:"),
+        ("\U0001F3BA \U0001F480", ":fish:"),
+        ("\U0001F3BA\U0001F480", ":fish:"),
     ]
 
     messages_by_emoji = {
@@ -513,7 +513,7 @@ class Salon(object):
 
     @classmethod
     def rewrite_emoji(cls, text):
-        if not isinstance(text, unicode):
+        if not isinstance(text, str):
             text = text.decode("utf8")
 
         # github started using real unicode emoji when autocompleting
@@ -528,7 +528,7 @@ class Salon(object):
         for line in text.splitlines():
             if line.startswith(">"):
                 continue
-            for emoji, message in self.messages_by_emoji.iteritems():
+            for emoji, message in self.messages_by_emoji.items():
                 if emoji in line:
                     return emoji, message
         return None, None

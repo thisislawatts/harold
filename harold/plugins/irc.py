@@ -40,7 +40,7 @@ class IRCBot(irc.IRCClient):
     maxOutstandingHeartbeats = 3
 
     def irc_PONG(self, prefix, params):
-        print "Received PONG."
+        print("Received PONG.")
         self.outstanding_heartbeats = max(self.outstanding_heartbeats-1, 0)
 
     def startHeartbeat(self):
@@ -49,17 +49,17 @@ class IRCBot(irc.IRCClient):
 
     def _sendHeartbeat(self):
         if self.outstanding_heartbeats > self.maxOutstandingHeartbeats :
-            print "Too many heartbeats missed. Killing connection."
+            print("Too many heartbeats missed. Killing connection.")
             self.transport.loseConnection()
             return
         else:
-            print "Sending PING. %d heartbeats outstanding." % self.outstanding_heartbeats
+            print("Sending PING. %d heartbeats outstanding." % self.outstanding_heartbeats)
 
         irc.IRCClient._sendHeartbeat(self)
         self.outstanding_heartbeats += 1
 
     def signedOn(self):
-        print "Signed on!"
+        print("Signed on!")
 
         if self.userserv_password:
             self.msg("userserv", "login %s %s" % (self.username,
@@ -68,7 +68,7 @@ class IRCBot(irc.IRCClient):
         self.factory.dispatcher.registerConsumer(self)
 
     def connectionLost(self, *args, **kwargs):
-        print "Connection lost."
+        print("Connection lost.")
         irc.IRCClient.connectionLost(self, *args, **kwargs)
         self.factory.dispatcher.deregisterConsumer(self)
 
@@ -78,7 +78,7 @@ class IRCBot(irc.IRCClient):
 
     def send_message(self, channel, message):
         # get rid of any evil characters that might allow shenanigans
-        message = unicode(message)
+        message = str(message)
         message = message.translate({
             ord("\r"): None,
             ord("\n"): None,

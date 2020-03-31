@@ -114,10 +114,10 @@ class DeployBeganListener(DeployListener):
 
     def _handle_request(self, request):
         salon = request.args["salon"][0]
-        id = unicode(request.args['id'][0], 'utf-8')
+        id = str(request.args['id'][0], 'utf-8')
         who = request.args['who'][0]
         args = request.args['args'][0]
-        log_path = unicode(request.args['log_path'][0], 'utf-8')
+        log_path = str(request.args['log_path'][0], 'utf-8')
         count = int(request.args['count'][0])
         self.monitor.onPushBegan(salon, id, who, args, log_path, count)
 
@@ -127,14 +127,14 @@ class DeployEndedListener(DeployListener):
 
     def _handle_request(self, request):
         salon = request.args["salon"][0]
-        id = unicode(request.args['id'][0], 'utf-8')
+        id = str(request.args['id'][0], 'utf-8')
 
         try:
             failed_hosts_arg = request.args["failed_hosts"][0]
         except KeyError:
             failed_hosts = []
         else:
-            failed_hosts = filter(None, failed_hosts_arg.decode("utf-8").split(","))
+            failed_hosts = [_f for _f in failed_hosts_arg.decode("utf-8").split(",") if _f]
 
         self.monitor.onPushEnded(salon, id, failed_hosts)
 
@@ -144,7 +144,7 @@ class DeployErrorListener(DeployListener):
 
     def _handle_request(self, request):
         salon = request.args["salon"][0]
-        id = unicode(request.args['id'][0], 'utf-8')
+        id = str(request.args['id'][0], 'utf-8')
         error = request.args['error'][0]
         self.monitor.onPushError(salon, id, error)
 
@@ -154,7 +154,7 @@ class DeployAbortedListener(DeployListener):
 
     def _handle_request(self, request):
         salon = request.args["salon"][0]
-        id = unicode(request.args['id'][0], 'utf-8')
+        id = str(request.args['id'][0], 'utf-8')
         reason = request.args['reason'][0]
         self.monitor.onPushAborted(salon, id, reason)
 
@@ -164,7 +164,7 @@ class DeployProgressListener(DeployListener):
 
     def _handle_request(self, request):
         salon = request.args["salon"][0]
-        id = unicode(request.args['id'][0], 'utf-8')
+        id = str(request.args['id'][0], 'utf-8')
         host = request.args['host'][0]
         index = float(request.args['index'][0])
         self.monitor.onPushProgress(salon, id, host, index)
@@ -292,7 +292,7 @@ class Salon(object):
         if deploy_count == 0:
             deploy_status = "no active deploys"
         elif deploy_count == 1:
-            deploy = self.deploys.values()[0]
+            deploy = list(self.deploys.values())[0]
             deploy_status = "%s is deploying" % deploy.who
         else:  # > 1
             deploy_status = "%d deploys in progress" % deploy_count
@@ -480,7 +480,7 @@ class SalonManager(object):
                     self.salon_config_db,
                     salon_config,
                 )
-        returnValue(self.salons.values())
+        returnValue(list(self.salons.values()))
 
     @inlineCallbacks
     def by_channel(self, channel_name):
@@ -489,7 +489,7 @@ class SalonManager(object):
 
     @inlineCallbacks
     def by_name(self, name):
-        salon = yield self.by_channel(u"#" + name)
+        salon = yield self.by_channel("#" + name)
         returnValue(salon)
 
     @inlineCallbacks
@@ -524,7 +524,7 @@ class SalonManager(object):
         try:
             data = []
 
-            for salon in self.salons.itervalues():
+            for salon in self.salons.values():
                 data.append({
                     "name": salon.name,
                     "allow_deploys": bool(salon.allow_deploys),
@@ -535,7 +535,7 @@ class SalonManager(object):
                         {
                             "user": d.who,
                             "completion": float(d.completion or 0) / d.host_count,
-                        } for d in salon.deploys.itervalues()
+                        } for d in salon.deploys.values()
                     ],
                     "hold": salon.current_hold,
                     "queue": salon.queue,

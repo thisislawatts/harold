@@ -61,7 +61,7 @@ def _topological_sort(plugins, dependencies):
         startup_order.append(satisfied)
 
         satisfied_plugin = plugins[satisfied]
-        for plugin, deps in dependencies.items():
+        for plugin, deps in list(dependencies.items()):
             for provided_interface in satisfied_plugin.PROVIDES_HAROLD_PLUGINS:
                 if provided_interface in deps:
                     deps.remove(provided_interface)
@@ -80,24 +80,24 @@ def load_plugins(config):
 
     # verify that we have the necessary plugins set up
     all_provided_interfaces = set()
-    for p in plugins.itervalues():
+    for p in plugins.values():
         for i in p.PROVIDES_HAROLD_PLUGINS:
             all_provided_interfaces.add(i)
 
-    for plugin_name, plugin_deps in dependencies.iteritems():
+    for plugin_name, plugin_deps in dependencies.items():
         for dep in plugin_deps:
             if dep not in all_provided_interfaces:
                 raise PluginDependencyError(plugin_name, dep)
 
     # move optional dependencies to real dependencies for topo sort if we
     # determine that they do indeed exist.
-    for plugin_name, plugin_optional_deps in optional_deps.iteritems():
+    for plugin_name, plugin_optional_deps in optional_deps.items():
         for optional_dep in plugin_optional_deps:
             if optional_dep in plugins:
                 dependencies[plugin_name].add(optional_dep)
             else:
-                print "%s: Discarding optional dependency %r" % (plugin_name,
-                                                                 optional_dep)
+                print("%s: Discarding optional dependency %r" % (plugin_name,
+                                                                 optional_dep))
 
     startup_order = _topological_sort(plugins, dependencies)
 
@@ -108,12 +108,12 @@ def load_plugins(config):
 
         module = plugins[plugin]
         args = dict((name, initialized)
-                    for name, initialized in initialized_plugins.iteritems()
+                    for name, initialized in initialized_plugins.items()
                     if name in dependencies[plugin])
         p = module.make_plugin(**args)
         if p:
             for provided_interface in module.PROVIDES_HAROLD_PLUGINS:
                 initialized_plugins[provided_interface] = p
 
-    return (ip for name, ip in initialized_plugins.iteritems()
+    return (ip for name, ip in initialized_plugins.items()
             if name != 'config')

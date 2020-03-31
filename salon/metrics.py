@@ -210,7 +210,7 @@ def calculate_metrics():
 
         collector.observe(event)
 
-    for collector in collectors.itervalues():
+    for collector in collectors.values():
         collector.flush()
 
     print("Writing aggregated metrics...")

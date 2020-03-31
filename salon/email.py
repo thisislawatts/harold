@@ -84,8 +84,8 @@ def send_naggy_email(mail, email_address, github_username):
     date = datetime.date.today().strftime("%b %d")
 
     message = Message()
-    message.sender = u"Harold \U0001F487 <noreply@harold.snooguts.net>"
-    message.subject = u"Outstanding pull requests for %s" % (date,)
+    message.sender = "Harold \U0001F487 <noreply@harold.snooguts.net>"
+    message.subject = "Outstanding pull requests for %s" % (date,)
     message.html = render_template(
         "email.html",
         username=github_username,

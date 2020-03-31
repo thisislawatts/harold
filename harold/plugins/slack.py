@@ -2,7 +2,7 @@ import collections
 import json
 import re
 import traceback
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from autobahn.twisted.websocket import (
     WebSocketClientFactory,
@@ -31,8 +31,8 @@ class SlackConfig(PluginConfig):
 
 class FormEncodedBodyProducer(object):
     def __init__(self, data):
-        encoded = urllib.urlencode(
-            {k: unicode(v).encode('utf-8') for k, v in data.iteritems()})
+        encoded = urllib.parse.urlencode(
+            {k: str(v).encode('utf-8') for k, v in data.items()})
         self.length = len(encoded)
         self.body = encoded
 
@@ -256,7 +256,7 @@ class SlackBot(object):
     @inlineCallbacks
     def send_message(self, channel_name, message):
         users = yield self._data_cache.get_users()
-        users_by_name = {u["name"]: u for u in users.itervalues()}
+        users_by_name = {u["name"]: u for u in users.values()}
         def replace_user_mention(m):
             mentioned_name = m.group(1)
             try:
@@ -268,7 +268,7 @@ class SlackBot(object):
         message = self.USER_RE.sub(replace_user_mention, message)
 
         channels = yield self._data_cache.get_channels()
-        channels_by_name = {"#" + c["name"]: c for c in channels.itervalues()}
+        channels_by_name = {"#" + c["name"]: c for c in channels.values()}
         def replace_channel_mention(m):
             mentioned_channel = m.group(1)
             try:
@@ -358,7 +358,7 @@ class SlackDataCache(object):
             name = name[1:]
 
         channels = yield self.get_channels()
-        for channel in channels.itervalues():
+        for channel in channels.values():
             if name == channel["name"]:
                 returnValue(channel)
         returnValue(None)

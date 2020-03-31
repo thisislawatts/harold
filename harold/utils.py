@@ -51,7 +51,7 @@ def pretty_and_accurate_time_span(delta):
 def dehilight(name):
     if name.startswith("@"):
         name = name[1:]
-    return u"{}\u200B{}".format(name[0], name[1:])
+    return "{}\u200B{}".format(name[0], name[1:])
 
 
 def constant_time_compare(actual, expected):
@@ -65,7 +65,7 @@ def constant_time_compare(actual, expected):
     expected_len = len(expected)
     result = actual_len ^ expected_len
     if expected_len > 0:
-        for i in xrange(actual_len):
+        for i in range(actual_len):
             result |= ord(actual[i]) ^ ord(expected[i % expected_len])
     return result == 0
 
